@@ -1,6 +1,6 @@
 # 📱 Teléfono Descompuesto
 
-[![TELEFONO DESCOMPUESTO GAMEPLAY IMAGE](https://img.itch.zone/aW1hZ2UvMzQzMjQ3Mi8yMDU5NTYxNy5wbmc=/original/kpPi7k.png)]([https://www.youtube.com/watch?v=pZFaapeM6ss&t=71s&ab_channel=MiguelA.Ahumada])
+[![TELEFONO DESCOMPUESTO GAMEPLAY IMAGE](https://img.itch.zone/aW1hZ2UvMzQzMjQ3Mi8yMDU5NTYxNy5wbmc=/original/kpPi7k.png)](https://www.youtube.com/watch?v=pZFaapeM6ss&t=71s&ab_channel=MiguelA.Ahumada "juego")
 
 ## [ESP]
 
