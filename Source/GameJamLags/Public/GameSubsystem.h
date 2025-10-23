@@ -20,26 +20,10 @@ class GAMEJAMLAGS_API UGameSubsystem : public UGameInstanceSubsystem
 	
 private:
 
-	
-	UPROPERTY(EditAnywhere, Category = "Widgets")
-	TArray<UUserWidget*> m_activeWidgets;
-
-	UPROPERTY(EditAnywhere, Category = "Widgets")
-	TArray<TSubclassOf<UUserWidget>> m_widgetClasses;
-
-	//Pause Widgets
-	UPROPERTY(VisibleAnywhere, Category = "Widgets")
-	TSubclassOf<UUserWidget> m_pauseWidgetClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widgets")
-	UUserWidget* m_pauseWidget;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widgets")
-	UUserWidget* m_menuWidget;
-
 public:
 	
-	
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+	TMap<TSubclassOf<UUserWidget>, UUserWidget*> m_widgetsMap;
 
 	UFUNCTION(BlueprintCallable)
 	void InitWidgets();

@@ -18,28 +18,23 @@ void UGameSubsystem::InitWidgets()
 		return;
 	}
 
-	//Mostly used Widgets
-
-	m_pauseWidget = CreateWidget<UUserWidget>(playerController, m_pauseWidgetClass);
-
 	//LevelWidgets
-	for (auto& widgetClass : m_widgetClasses)
+	for (auto& widgetPair : m_widgetsMap)
 	{
-		if (!widgetClass)
+		if (!widgetPair.Key) continue;
+
+		UUserWidget* widgetInstance = CreateWidget<UUserWidget>(playerController,widgetPair.Key);
+
+		if (!widgetInstance)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Couldn't create this widget"));
 			continue;
 		}
 
-		UUserWidget* widgetPtr = CreateWidget<UUserWidget>(playerController,widgetClass);
+		widgetInstance->SetVisibility(ESlateVisibility::Hidden);
+		widgetInstance->AddToViewport();
 
-		if (!widgetPtr)
-		{
-			continue;
-		}
-		widgetPtr->SetVisibility(ESlateVisibility::Hidden);
-		widgetPtr->AddToViewport();
-
-		m_activeWidgets.Add(widgetPtr);
+		widgetPair.Value = widgetInstance;
 	}
 }
 
@@ -51,17 +46,16 @@ void UGameSubsystem::ShowWidget(TSubclassOf<UUserWidget> widgetClass)
 	{
 		return;
 	}
-
-	for (auto& currentWidget : m_activeWidgets)
+	
+	UUserWidget** widgetPtr = m_widgetsMap.Find(widgetClass);
+	
+	if (!widgetPtr)
 	{
-		if (currentWidget && currentWidget->IsA(widgetClass))
-		{
-			//playerController->SetInputMode(FInputModeUIOnly());
-			currentWidget->SetVisibility(ESlateVisibility::Visible);
-			//playerController->bShowMouseCursor = true;
-			break;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("ShowWidget: Widget instance for class is null"));
+		return;
 	}
+	(*widgetPtr)->SetVisibility(ESlateVisibility::Visible);
+	
 }
 
 void UGameSubsystem::HideWidget(TSubclassOf<UUserWidget> widgetClass)
@@ -73,14 +67,14 @@ void UGameSubsystem::HideWidget(TSubclassOf<UUserWidget> widgetClass)
 		return;
 	}
 
-	for (auto& currentWidget : m_activeWidgets)
+	UUserWidget** widgetPtr = m_widgetsMap.Find(widgetClass);
+
+	if (!widgetPtr)
 	{
-		if (currentWidget && currentWidget->IsA(widgetClass))
-		{
-			//playerController->SetInputMode(FInputModeGameOnly());
-			currentWidget->SetVisibility(ESlateVisibility::Hidden);
-			//playerController->bShowMouseCursor = false;
-			break;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("ShowWidget: Widget instance for class is null"));
+		return;
 	}
+
+	(*widgetPtr)->SetVisibility(ESlateVisibility::Hidden);
+	
 }
