@@ -6,8 +6,10 @@
 #include "Kismet/GameplayStatics.h" 
 
 
-
-
+/// <summary>
+/// Crea todos lo widgets de volón pinpon, no olvides también meterlos 
+/// en el BP_GameSubsystem y llamar esta madre en el GM sino ya mamó.
+/// </summary>
 void UGameSubsystem::InitWidgets()
 {
 	
@@ -27,17 +29,23 @@ void UGameSubsystem::InitWidgets()
 
 		if (!widgetInstance)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Couldn't create this widget"));
+			UE_LOG(	LogTemp, Warning, 
+							TEXT("Couldn't initialize the widget instance %s."), 
+							*widgetPair.Key->GetName());
 			continue;
 		}
-
-		widgetInstance->SetVisibility(ESlateVisibility::Hidden);
-		widgetInstance->AddToViewport();
 
 		widgetPair.Value = widgetInstance;
 	}
 }
 
+/*
+	1.- Busca si existe la widgetClass en el widgetMap.
+	2.- Lo añade al viewport
+	3.- Cambia la vista a que se vea
+	4.- Setea el input mode de UI
+	5.- Muestra el cursor del mouse
+*/
 void UGameSubsystem::ShowWidget(TSubclassOf<UUserWidget> widgetClass)
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -54,10 +62,28 @@ void UGameSubsystem::ShowWidget(TSubclassOf<UUserWidget> widgetClass)
 		UE_LOG(LogTemp, Warning, TEXT("ShowWidget: Widget instance for class is null"));
 		return;
 	}
+
+	if (!(*widgetPtr)->IsInViewport())
+	{
+		(*widgetPtr)->AddToViewport();
+	}
+
 	(*widgetPtr)->SetVisibility(ESlateVisibility::Visible);
 	
+	FInputModeUIOnly inputMode;
+	inputMode.SetWidgetToFocus((*widgetPtr)->TakeWidget());
+	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	playerController->SetInputMode(inputMode);
+	playerController->SetShowMouseCursor(true);
 }
 
+/*
+	1.- Busca si existe el widgetClass en el widgetMap.
+	2.- Lo añade al viewport
+	3.- Cambia la vista a que se vea
+	4.- Setea el input mode de Game
+	5.- Deja de mostrar el cursor del mouse
+*/
 void UGameSubsystem::HideWidget(TSubclassOf<UUserWidget> widgetClass)
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -75,6 +101,90 @@ void UGameSubsystem::HideWidget(TSubclassOf<UUserWidget> widgetClass)
 		return;
 	}
 
-	(*widgetPtr)->SetVisibility(ESlateVisibility::Hidden);
+	if ((*widgetPtr)->IsInViewport())
+	{
+		(*widgetPtr)->RemoveFromViewport();
+	}
 	
+	(*widgetPtr)->SetVisibility(ESlateVisibility::Hidden);
+	(*widgetPtr)->RemoveFromViewport();
+
+	FInputModeGameOnly inputMode;
+	playerController->SetInputMode(inputMode);
+	playerController->SetShowMouseCursor(false);
+	playerController->SetPause(false);
+}
+
+
+void UGameSubsystem::Pause()
+{
+	
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	
+	//Si no hay PC, o el WidgetMap no contiene la clase, o el juego está en pausa regresa alv.
+	if (!playerController 
+			|| !m_widgetsMap.Contains(m_pauseWidgetClass) 
+			|| m_isGamePaused)
+	{
+		return;
+	}
+
+	//Si la clase de widgets está en el mapa, dame un puntero del cabrón.
+	UUserWidget** widgetPtr = m_widgetsMap.Find(m_pauseWidgetClass);
+	if (!widgetPtr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the widget on the widgetsMaps"));
+		return;
+	}
+
+	//Si el widget ya no está en el viewport pues añádelo compadre
+	if (!(*widgetPtr)->IsInViewport())
+	{
+		(*widgetPtr)->AddToViewport();
+	}
+
+	//Muéstralo y el UI también
+	(*widgetPtr)->SetVisibility(ESlateVisibility::Visible);
+
+	//Setea el tipo de input que tendrá que será el de la UI
+	FInputModeUIOnly inputMode;
+	inputMode.SetWidgetToFocus((*widgetPtr)->TakeWidget());
+	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	playerController->SetInputMode(inputMode);
+
+	//Muestra el cursor del mouse
+	playerController->SetShowMouseCursor(true);
+
+	//Pausa esa madre cawn
+	playerController->SetPause(true);
+	
+	m_isGamePaused = true;
+}
+
+void UGameSubsystem::Unpause()
+{
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (!playerController 
+			|| !m_widgetsMap.Contains(m_pauseWidgetClass)
+			|| !m_isGamePaused)
+	{
+		return;
+	}
+
+	UUserWidget** widgetPtr = m_widgetsMap.Find(m_pauseWidgetClass);
+
+	if (!widgetPtr) return;
+
+	if ((*widgetPtr)->IsInViewport())
+	{
+		(*widgetPtr)->RemoveFromViewport();
+	}
+
+	playerController->SetShowMouseCursor(false);
+	playerController->SetPause(false);
+	playerController->SetInputMode(FInputModeGameOnly());
+	(*widgetPtr)->SetVisibility(ESlateVisibility::Hidden);
+
+	m_isGamePaused = false;
 }

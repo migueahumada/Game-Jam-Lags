@@ -17,14 +17,17 @@ class GAMEJAMLAGS_API UGameSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
-	
 private:
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+	TSubclassOf<UUserWidget> m_pauseWidgetClass;
 
-public:
-	
 	UPROPERTY(EditAnywhere, Category = "Widgets")
 	TMap<TSubclassOf<UUserWidget>, UUserWidget*> m_widgetsMap;
 
+	UPROPERTY(VisibleAnywhere, Category = "Widgets")
+	bool m_isGamePaused = false;
+
+public:
 	UFUNCTION(BlueprintCallable)
 	void InitWidgets();
 
@@ -33,5 +36,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HideWidget(TSubclassOf<UUserWidget> widgetClass);
+
+	UFUNCTION(BlueprintCallable)
+	void Pause();
+
+	UFUNCTION(BlueprintCallable)
+	void Unpause();
+
+	UFUNCTION(BlueprintCallable)
+	const bool IsGamePaused() const
+	{
+		return m_isGamePaused;
+	}
+
 
 };
