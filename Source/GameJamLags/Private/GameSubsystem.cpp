@@ -6,6 +6,39 @@
 #include "Kismet/GameplayStatics.h" 
 
 
+/*
+* Crea el widget de la widget class y lo coloca en el mapa de widgets por nivel
+*/
+void UGameSubsystem::InitLevelWidgets(EGameLevel gameLevel)
+{
+	
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (!playerController)
+	{
+		return;
+	}
+
+	auto currentWidgetMap = m_levelWidgetMaps.Find(gameLevel)->WidgetMap;
+
+	for (auto& widgetPair : currentWidgetMap)
+	{
+		if (!widgetPair.Key) continue;
+
+		UUserWidget* widgetInstance = CreateWidget<UUserWidget>(playerController,widgetPair.Key);
+
+		if (!widgetInstance)
+		{
+			UE_LOG(LogTemp, Warning,
+						 TEXT("Couldn't initialize the widget instance %s."),
+						 *widgetPair.Key->GetName());
+			return;
+		}
+
+		widgetPair.Value = widgetInstance;
+	}
+}
+
 /// <summary>
 /// Crea todos lo widgets de volón pinpon, no olvides también meterlos 
 /// en el BP_GameSubsystem y llamar esta madre en el GM sino ya mamó.
