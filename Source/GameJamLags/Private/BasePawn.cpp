@@ -3,10 +3,16 @@
 
 #include "BasePawn.h"
 
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/Controller.h"
+#include "GameFramework/Actor.h"
+#include "BasePawnMoveComponent.h"
 
 // Sets default values
 ABasePawn::ABasePawn()
@@ -33,8 +39,16 @@ void ABasePawn::BeginPlay()
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
-		
+		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			subsystem->AddMappingContext(mappingContext,0);
+		}
 	}
+}
+
+void ABasePawn::Jump()
+{
+	
 }
 
 // Called every frame
@@ -50,6 +64,15 @@ void ABasePawn::Tick(float DeltaTime)
 void ABasePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* inputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		if (UInputAction** action = inputAction.Find("Jump"))
+		{
+			inputComponent->BindAction(*action, ETriggerEvent::Started, this, &ABasePawn::Jump);	
+		}
+		
+	}
 
 }
 
