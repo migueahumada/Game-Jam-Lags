@@ -11,7 +11,8 @@ class UCapsuleComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
 class USpringArmComponent;
-
+class UInputMappingContext;
+class UInputAction;
 
 UCLASS()
 class GAMEJAMLAGS_API ABasePawn : public APawn
@@ -33,9 +34,19 @@ public:
 	
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	class UCameraComponent* camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputMappingContext* mappingContext;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TMap<FName,UInputAction*> inputAction;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	UFUNCTION(BlueprintCallable, Category = Input)
+	void Jump();
 
 public:	
 	// Called every frame
