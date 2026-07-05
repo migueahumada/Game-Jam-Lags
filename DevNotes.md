@@ -58,8 +58,25 @@ In this part I will use the observer pattern.
 - `BP_HUD` -> It has an array of references to different widgets that has the `BPI_ShowableWidget` interface. 
 - `BPI_ShowableWidget`->  Will have functions such as `UpdateWidgetState` where each widget that implemnets the interface will act on its own with the event listeners.
 
-## Health System
+# Health Bar
 The player will have a total of 16 slots of life and each slot will by divided by three. 
 
 So the life points will be the product of 
 ``16 * 3 = 48``.
+
+# Inventory 
+
+![Image of Onta Ramón's Inventory](https://blogger.googleusercontent.com/img/a/AVvXsEiqlkuBG4pnwZESgyVKdBt9fvLQ87LMoxqQDQ-bAsojhU-pi6Fj9GwOSb7piSSKZF4QPIE3vdD5I06NrN0FZr6IbMRNDGk1I1Bw-reXoIQl4OpnXkGxZJBqPATIB9FiUovvIc8-eAVvL8s7fYHhq1g8yFBLObBMW1u-qKvZJyT-J5UQzzddt7RT3Q4rrFg)
+
+Inside the inventory there are 5 Subwidgets
+- **Background**: the image set as a background
+- **PlayerVisualizer**: The visualizer to view either the player or an item.
+- **NavBar**: The navigation bar to toggle something on the phone such as the item grid, the quest viewer, the SMS and all of that. 
+- **ItemDescription**: Displays information about an item.
+- **PhoneInventory**: This will display either quests, SMS or items.
+- **Coin Counter**: Shows how many coins Ramon has gathered.
+
+
+
+
+
