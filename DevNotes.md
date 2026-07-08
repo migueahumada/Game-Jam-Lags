@@ -20,7 +20,36 @@ On this project where conveniently using UE5 game framework. We aren't really us
 
 
 # UI System
-There's a central class called `BP_HUD` which is just a child of the HUD class. I'm using it as a somekind of singleton pattern. Not perfect but it does work quite well.
+
+There's a central class called `BP_ HUD` which is just a child of the HUD class. It will function as a *singleton* to all the other Widget Blueprints (WBP).
+
+The WBPs will be divided in two:
+- **Screen Widgets**: which will have a canvas and will be displayed on screen, such as:
+  - HUD
+  - Pause 
+  - Inventory 
+  - Quick Inventory 
+- **SubWidgets**: That will be contained within ScreenWidgets.
+
+All of these WBP will have an interface called `BPI_ShowableWidget`. This interface has virtual methods such as:
+- `UpdateUIState`
+- `OnShow`
+- `OnHidden`
+
+The way the interface works is:
+
+1. An `Actor` with some component triggers an event for the UI.
+2. The event calls an event dispatcher that shouts "Something in the UI must be changed". 
+3. In the `BP_HUD` we subscribe *(bind)* to those event dispatcheres.
+4. When the event we were subscribed to executes, the BP_HUD iterates over a list of Screen Widgets, which implement `BPI_ShowableWidget`.
+5. During the iteration the player calls the method `UpdateUIState` in all the Screen Widgets.
+6. Inside the Screen Widgets, we call `UpdateUIState` to all the subwidgets that implement `BPI_ShowableWidget`.
+7. Ultimately, subwidget have their own implementation of what means for them to Update something. It can be maybe change the coin counter text or change the visibility of some items.
+
+To update the widgets we have created a struct `S_UI_Variables` that works as a constant buffer that will contain information that will be displayed or used by the Widgets to display information.
+
+![Image of Onta Ramón](https://blogger.googleusercontent.com/img/a/AVvXsEh12wrzFTGiwWs_Pp2oT_z_yP3PHaKoDxa757CGsw1ciemsFR8ll8uAJNyc7u3sOuWpj4qnRD-X45rMZxNNomZFjHR5UTkxhNooDFekHlQeuFVZjPg6EMYECwr5aLuD6a8fBi8hYzNQYmL8fsP7MlNy1cqeX79g7R-UKcj7WOdMY402N644BYjbUlpeuUc)
+
 
 # Health, updating the player and the HUD
 
@@ -29,8 +58,25 @@ In this part I will use the observer pattern.
 - `BP_HUD` -> It has an array of references to different widgets that has the `BPI_ShowableWidget` interface. 
 - `BPI_ShowableWidget`->  Will have functions such as `UpdateWidgetState` where each widget that implemnets the interface will act on its own with the event listeners.
 
-## Health System
-The player will have in total 16 slots of life and each slot will by divided by three. 
+# Health Bar
+The player will have a total of 16 slots of life and each slot will by divided by three. 
 
 So the life points will be the product of 
 ``16 * 3 = 48``.
+
+# Inventory 
+
+![Image of Onta Ramón's Inventory](https://blogger.googleusercontent.com/img/a/AVvXsEiqlkuBG4pnwZESgyVKdBt9fvLQ87LMoxqQDQ-bAsojhU-pi6Fj9GwOSb7piSSKZF4QPIE3vdD5I06NrN0FZr6IbMRNDGk1I1Bw-reXoIQl4OpnXkGxZJBqPATIB9FiUovvIc8-eAVvL8s7fYHhq1g8yFBLObBMW1u-qKvZJyT-J5UQzzddt7RT3Q4rrFg)
+
+Inside the inventory there are 5 Subwidgets
+- **Background**: the image set as a background
+- **PlayerVisualizer**: The visualizer to view either the player or an item.
+- **NavBar**: The navigation bar to toggle something on the phone such as the item grid, the quest viewer, the SMS and all of that. 
+- **ItemDescription**: Displays information about an item.
+- **PhoneInventory**: This will display either quests, SMS or items.
+- **Coin Counter**: Shows how many coins Ramon has gathered.
+
+
+
+
+
