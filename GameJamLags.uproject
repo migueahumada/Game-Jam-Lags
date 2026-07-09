@@ -119,6 +119,14 @@
 		{
 			"Name": "ChaosUserDataPT",
 			"Enabled": false
+		},
+		{
+			"Name": "SkeletalMeshModelingTools",
+			"Enabled": true
+		},
+		{
+			"Name": "PhysicsControl",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
