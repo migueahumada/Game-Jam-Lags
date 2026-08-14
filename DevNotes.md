@@ -78,5 +78,29 @@ Inside the inventory there are 5 Subwidgets
 
 
 
+# Camera rotation
 
+- Delta Yaw -> in **radians**
+  - -180 a 180
+  - PI, 2PI
+
+
+If we do the delta Yaw
+  
+```cpp
+  const float PI = 3.141592653589f;
+  const float TWOPI = 2.0f * PI;
+  const float EULERCAP =  180.0f / TWOPI;
+
+  float ActorYaw = 120;
+  float SpringArmYaw = -90;
+
+  // 120 - (-90) = 210
+  float DeltaYaw = (ActorYaw - SpiringArmYaw) % EULERCAP; 
+  
+  // 120 + 210 = 
+  SpringArmYaw = ActorYaw + DeltaYaw;
+```
+
+Delta Yaw: -180 - (-90) = -90
 
