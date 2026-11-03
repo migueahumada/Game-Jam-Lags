@@ -102,5 +102,37 @@ If we do the delta Yaw
   SpringArmYaw = ActorYaw + DeltaYaw;
 ```
 
-Delta Yaw: -180 - (-90) = -90
+# Checkpoint System
+
+BP_CheckPoint -> if you get close to it, the checkpoint activates
+
+BPI_SaveGame -> This will be called and you can pass parameters to it to save them
+
+BP_SaveGame -> It will have a struct where the game will be saved
+
+```cpp
+  struct SaveGameData
+  {
+    int coins;
+    ICollectables collectables[128];
+    Level currentLevel;
+    IWearable currentWearable;
+  };
+
+  class Checkpoint
+  {
+    public:
+
+    private:
+      Vector3 startUpPosition;
+  };
+
+  struct SaveSlot
+  {
+    SaveGameData saveGameData;
+  };
+
+```
+
+
 
